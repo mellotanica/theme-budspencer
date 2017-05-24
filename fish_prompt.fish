@@ -850,7 +850,8 @@ if not begin
     or set -q -x RANGER_LEVEL
     or set -q -x VIM
   end ^ /dev/null
-  if set -q bookmarks[1]
+  if set -q bookmarks[1] 
+    and set -q budspencer_begin_on_last_bookmark
     cd $bookmarks[1]
   end
 end

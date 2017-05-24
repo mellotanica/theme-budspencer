@@ -121,98 +121,100 @@ function __budspencer_is_git_stashed -d 'Check if there are stashed commits'
 end
 
 function __budspencer_prompt_git_symbols -d 'Displays the git symbols'
-  set -l is_repo (command git rev-parse --is-inside-work-tree ^/dev/null)
-  if [ -z $is_repo ]
-    return
-  end
-
-  set -l git_ahead_behind (__budspencer_is_git_ahead_or_behind)
-  set -l git_status (__budspencer_git_status)
-  set -l git_stashed (__budspencer_is_git_stashed)
-
-  if [ (expr $git_ahead_behind[1] + $git_ahead_behind[2] + $git_status[1] + $git_status[2] + $git_status[3] + $git_status[4] + $git_status[5] + $git_status[6] + $git_stashed) -ne 0 ]
-    set_color $budspencer_colors[3]
-    echo -n ''
-    set_color -b $budspencer_colors[3]
-    switch $pwd_style
-      case long short
-        if [ $symbols_style = 'symbols' ]
-          if [ $git_ahead_behind[1] -gt 0 ]
-            set_color -o $budspencer_colors[5]
-            echo -n ' ↑'
+  if test (git config --get 'oh-my-zsh.hide-status') != '1'
+    set -l is_repo (command git rev-parse --is-inside-work-tree ^/dev/null)
+    if [ -z $is_repo ]
+      return
+    end
+  
+    set -l git_ahead_behind (__budspencer_is_git_ahead_or_behind)
+    set -l git_status (__budspencer_git_status)
+    set -l git_stashed (__budspencer_is_git_stashed)
+  
+    if [ (expr $git_ahead_behind[1] + $git_ahead_behind[2] + $git_status[1] + $git_status[2] + $git_status[3] + $git_status[4] + $git_status[5] + $git_status[6] + $git_stashed) -ne 0 ]
+      set_color $budspencer_colors[3]
+      echo -n ''
+      set_color -b $budspencer_colors[3]
+      switch $pwd_style
+        case long short
+          if [ $symbols_style = 'symbols' ]
+            if [ $git_ahead_behind[1] -gt 0 ]
+              set_color -o $budspencer_colors[5]
+              echo -n ' ↑'
+            end
+            if [ $git_ahead_behind[2] -gt 0 ]
+              set_color -o $budspencer_colors[5]
+              echo -n ' ↓'
+            end
+            if [ $git_status[1] -gt 0 ]
+              set_color -o $budspencer_colors[12]
+              echo -n ' +'
+            end
+            if [ $git_status[2] -gt 0 ]
+              set_color -o $budspencer_colors[7]
+              echo -n ' –'
+            end
+            if [ $git_status[3] -gt 0 ]
+              set_color -o $budspencer_colors[10]
+              echo -n ' ✱'
+            end
+            if [ $git_status[4] -gt 0 ]
+              set_color -o $budspencer_colors[8]
+              echo -n ' →'
+            end
+            if [ $git_status[5] -gt 0 ]
+              set_color -o $budspencer_colors[9]
+              echo -n ' ═'
+            end
+            if [ $git_status[6] -gt 0 ]
+              set_color -o $budspencer_colors[4]
+              echo -n ' ●'
+            end
+            if [ $git_stashed -gt 0 ]
+              set_color -o $budspencer_colors[11]
+              echo -n ' ✭'
+            end
+          else
+            if [ $git_ahead_behind[1] -gt 0 ]
+              set_color $budspencer_colors[5]
+              echo -n ' '$git_ahead_behind[1]
+            end
+            if [ $git_ahead_behind[2] -gt 0 ]
+              set_color $budspencer_colors[5]
+              echo -n ' '$git_ahead_behind[2]
+            end
+            if [ $git_status[1] -gt 0 ]
+              set_color $budspencer_colors[12]
+              echo -n ' '$git_status[1]
+            end
+            if [ $git_status[2] -gt 0 ]
+              set_color $budspencer_colors[7]
+              echo -n ' '$git_status[2]
+            end
+            if [ $git_status[3] -gt 0 ]
+              set_color $budspencer_colors[10]
+              echo -n ' '$git_status[3]
+            end
+            if [ $git_status[4] -gt 0 ]
+              set_color $budspencer_colors[8]
+              echo -n ' '$git_status[4]
+            end
+            if [ $git_status[5] -gt 0 ]
+              set_color $budspencer_colors[9]
+              echo -n ' '$git_status[5]
+            end
+            if [ $git_status[6] -gt 0 ]
+              set_color $budspencer_colors[4]
+              echo -n ' '$git_status[6]
+            end
+            if [ $git_stashed -gt 0 ]
+              set_color $budspencer_colors[11]
+              echo -n ' '$git_stashed
+            end
           end
-          if [ $git_ahead_behind[2] -gt 0 ]
-            set_color -o $budspencer_colors[5]
-            echo -n ' ↓'
-          end
-          if [ $git_status[1] -gt 0 ]
-            set_color -o $budspencer_colors[12]
-            echo -n ' +'
-          end
-          if [ $git_status[2] -gt 0 ]
-            set_color -o $budspencer_colors[7]
-            echo -n ' –'
-          end
-          if [ $git_status[3] -gt 0 ]
-            set_color -o $budspencer_colors[10]
-            echo -n ' ✱'
-          end
-          if [ $git_status[4] -gt 0 ]
-            set_color -o $budspencer_colors[8]
-            echo -n ' →'
-          end
-          if [ $git_status[5] -gt 0 ]
-            set_color -o $budspencer_colors[9]
-            echo -n ' ═'
-          end
-          if [ $git_status[6] -gt 0 ]
-            set_color -o $budspencer_colors[4]
-            echo -n ' ●'
-          end
-          if [ $git_stashed -gt 0 ]
-            set_color -o $budspencer_colors[11]
-            echo -n ' ✭'
-          end
-        else
-          if [ $git_ahead_behind[1] -gt 0 ]
-            set_color $budspencer_colors[5]
-            echo -n ' '$git_ahead_behind[1]
-          end
-          if [ $git_ahead_behind[2] -gt 0 ]
-            set_color $budspencer_colors[5]
-            echo -n ' '$git_ahead_behind[2]
-          end
-          if [ $git_status[1] -gt 0 ]
-            set_color $budspencer_colors[12]
-            echo -n ' '$git_status[1]
-          end
-          if [ $git_status[2] -gt 0 ]
-            set_color $budspencer_colors[7]
-            echo -n ' '$git_status[2]
-          end
-          if [ $git_status[3] -gt 0 ]
-            set_color $budspencer_colors[10]
-            echo -n ' '$git_status[3]
-          end
-          if [ $git_status[4] -gt 0 ]
-            set_color $budspencer_colors[8]
-            echo -n ' '$git_status[4]
-          end
-          if [ $git_status[5] -gt 0 ]
-            set_color $budspencer_colors[9]
-            echo -n ' '$git_status[5]
-          end
-          if [ $git_status[6] -gt 0 ]
-            set_color $budspencer_colors[4]
-            echo -n ' '$git_status[6]
-          end
-          if [ $git_stashed -gt 0 ]
-            set_color $budspencer_colors[11]
-            echo -n ' '$git_stashed
-          end
-        end
-        set_color -b $budspencer_colors[3] normal
-        echo -n ' '
+          set_color -b $budspencer_colors[3] normal
+          echo -n ' '
+      end
     end
   end
 end
