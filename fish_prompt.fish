@@ -597,7 +597,8 @@ end
 # => Git segment
 ################
 function __budspencer_prompt_git_branch -d 'Return the current branch name'
-  if test (git config --get 'budspencer.hide-branch') != '1'
+  set -l hide_branch (command git config --get 'budspencer.hide-branch')
+  if not test $hide_branch -o $hide_branch != '1'
     set -l branch (command git symbolic-ref HEAD ^ /dev/null | sed -e 's|^refs/heads/||')
     if not test $branch > /dev/null
       set -l position (command git describe --contains --all HEAD ^ /dev/null)
