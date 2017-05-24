@@ -121,7 +121,7 @@ function __budspencer_is_git_stashed -d 'Check if there are stashed commits'
 end
 
 function __budspencer_prompt_git_symbols -d 'Displays the git symbols'
-  if test (git config --get 'oh-my-zsh.hide-status') != '1'
+  if test (git config --get 'budspencer.hide-status') != '1'
     set -l is_repo (command git rev-parse --is-inside-work-tree ^/dev/null)
     if [ -z $is_repo ]
       return

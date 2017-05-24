@@ -597,43 +597,45 @@ end
 # => Git segment
 ################
 function __budspencer_prompt_git_branch -d 'Return the current branch name'
-  set -l branch (command git symbolic-ref HEAD ^ /dev/null | sed -e 's|^refs/heads/||')
-  if not test $branch > /dev/null
-    set -l position (command git describe --contains --all HEAD ^ /dev/null)
-    if not test $position > /dev/null
-      set -l commit (command git rev-parse HEAD ^ /dev/null | sed 's|\(^.......\).*|\1|')
-      if test $commit
-        set_color -b $budspencer_colors[11]
+  if test (git config --get 'budspencer.hide-branch') != '1'
+    set -l branch (command git symbolic-ref HEAD ^ /dev/null | sed -e 's|^refs/heads/||')
+    if not test $branch > /dev/null
+      set -l position (command git describe --contains --all HEAD ^ /dev/null)
+      if not test $position > /dev/null
+        set -l commit (command git rev-parse HEAD ^ /dev/null | sed 's|\(^.......\).*|\1|')
+        if test $commit
+          set_color -b $budspencer_colors[11]
+          switch $pwd_style
+            case short long
+              echo -n ''(set_color $budspencer_colors[1])' ➦ '$commit' '(set_color $budspencer_colors[11])
+            case none
+              echo -n ''
+          end
+          set_color normal
+          set_color $budspencer_colors[11]
+        end
+      else
+        set_color -b $budspencer_colors[9]
         switch $pwd_style
           case short long
-            echo -n ''(set_color $budspencer_colors[1])' ➦ '$commit' '(set_color $budspencer_colors[11])
+            echo -n ''(set_color $budspencer_colors[1])'  '$position' '(set_color $budspencer_colors[9])
           case none
             echo -n ''
         end
         set_color normal
-        set_color $budspencer_colors[11]
+        set_color $budspencer_colors[9]
       end
     else
-      set_color -b $budspencer_colors[9]
+      set_color -b $budspencer_colors[3]
       switch $pwd_style
         case short long
-          echo -n ''(set_color $budspencer_colors[1])'  '$position' '(set_color $budspencer_colors[9])
+          echo -n ''(set_color $budspencer_colors[1])'  '$branch' '(set_color $budspencer_colors[3])
         case none
           echo -n ''
       end
       set_color normal
-      set_color $budspencer_colors[9]
+      set_color $budspencer_colors[3]
     end
-  else
-    set_color -b $budspencer_colors[3]
-    switch $pwd_style
-      case short long
-        echo -n ''(set_color $budspencer_colors[1])'  '$branch' '(set_color $budspencer_colors[3])
-      case none
-        echo -n ''
-    end
-    set_color normal
-    set_color $budspencer_colors[3]
   end
 end
 
